@@ -1,0 +1,307 @@
+import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:http/http.dart' as http;
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  TextEditingController emailController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
+
+  var formKey = GlobalKey<FormState>();
+
+  bool isVisible = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Container(
+          height: 800,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Image.asset('assets/images/desgine.PNG'),
+                Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 20,
+                          ),
+                          child: TextFormField(
+                            controller: emailController,
+                            validator: MultiValidator([
+                              RequiredValidator(errorText: "Required"),
+                              EmailValidator(
+                                  errorText: 'enter a valid email address'),
+                            ]),
+                            autovalidateMode: AutovalidateMode.always,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                filled: true,
+                                fillColor: Colors.black12,
+                                labelText: "Enter Your Email",
+                                labelStyle: TextStyle(
+                                  color: Colors.blue,
+                                ),
+                                icon: Icon(Icons.access_alarm),
+                                prefixIcon: Icon(Icons.abc_sharp),
+                                suffixIcon: Icon(Icons.visibility),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                      color: Colors.green,
+                                      width: 2,
+                                    )),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ))),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 20,
+                          ),
+                          child: TextFormField(
+                            controller: passwordController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Password is Required";
+                              } else if (value.length <= 6) {
+                                return "Password should be greater than 6 latter";
+                              }
+                            },
+                            autovalidateMode: AutovalidateMode.always,
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                            obscureText: isVisible,
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                filled: true,
+                                fillColor: Colors.black12,
+                                labelText: "Enter Your Password",
+                                labelStyle: TextStyle(
+                                  color: Colors.blue,
+                                ),
+                                icon: Icon(Icons.access_alarm),
+                                prefixIcon: Icon(Icons.abc_sharp),
+                                suffixIcon: isVisible == false
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isVisible = true;
+                                          });
+                                        },
+                                        child: Icon(Icons.visibility_off))
+                                    : GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      isVisible = false;
+                                    });
+                                  },
+                                        child: Icon(Icons.visibility)),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                      color: Colors.green,
+                                      width: 2,
+                                    )),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ))),
+                          ),
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                print("Validation Okay");
+                                print('Email: ${emailController.text}');
+                                print('password: ${passwordController.text}');
+                              } else {
+                                print("Not Validate");
+                              }
+                            },
+                            child: Text("Login"))
+                      ],
+                    )),
+                Container(
+                  height: 200,
+                  width: 400,
+                  color: Colors.blueGrey,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                        color: Colors.red,
+                      ),
+                      Positioned(
+                          bottom: -50,
+                          right: 0,
+                          left: 0,
+                          child: Center(
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image:
+                                      AssetImage('assets/images/desgine.PNG'),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    top: -20,
+                                    right: 10,
+                                    child: Container(
+                                      height: 50,
+                                      width: 20,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 90,
+                ),
+                Container(
+                  height: 200,
+                  width: 400,
+                  color: Colors.black12,
+                  child: Wrap(
+                    clipBehavior: Clip.hardEdge,
+                    direction: Axis.vertical,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 20,
+                    runSpacing: 40,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        color: Colors.red,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.green,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.red,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.red,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.red,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 60,
+                        color: Colors.red,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
